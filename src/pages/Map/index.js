@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 
+import NavHeader from '../../components/NavHeader'
 import "./index.scss"
 
 // navigator.geolocation.getCurrentPosition((position) => {
@@ -25,7 +26,8 @@ export default class Map extends Component {
     return (
       <div className="map">
         {/* 地图容器 */}
-        <div id="container" />
+      <NavHeader className="map-header"></NavHeader>
+      <div id="container" />
       </div>
     )
   }
