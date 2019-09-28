@@ -9,7 +9,7 @@
 .city {
   .title {
     font-size: 14px;
-    padding: 10px 15px;
+    padding: 0px 15px;
     color: #999;
   }
   .name {
@@ -35,6 +35,7 @@
   box-sizing: border-box;
   padding-top: 0px;
   text-align: center;
+  margin: 0;
   .city-index-item {
     flex: 1;
   }

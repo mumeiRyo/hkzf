@@ -1,7 +1,7 @@
-import axios from 'axios'
-import { resolve } from 'dns'
+import { BASE_URL } from './url'
+import { API } from './api'
 
-const BMap = window.BMap 
+const BMap = window.BMap
 
 // 创建获取当前定位城市数据的函数
 // const getCurrentCity = callback => {
@@ -32,22 +32,33 @@ const BMap = window.BMap
 
 // promise
 const getCurrentCity = () => {
-  return new Promise(resolve => {
-    const myCity = new BMap.LocalCity()
 
-    myCity.get(async result => {
-      const { name } = result
-      const res = await axios.get('http://localhost:8080/area/info', {
-        params: {
-          name
-        }
+  const myCity = JSON.parse(localStorage.getItem('hkzf_city'))
+  console.log(myCity)
+  
+  if (!myCity) {
+    return new Promise(resolve => {
+      const myCity = new BMap.LocalCity()
+
+      myCity.get(async result => {
+        const { name } = result
+        const res = await API.get('/area/info', {
+          params: {
+            name
+          }
+        })
+
+        const { label, value } = res.data.body
+        // 异步操作成功,调用resolve(), 将数据作为 resolve 的参数来传递
+        resolve({ label, value })
+
+        localStorage.setItem('hkzf_city', JSON.stringify({ label, value }))
       })
-      
-      const { label, value } = res.data.body
-      // 异步操作成功,调用resolve(), 将数据作为 resolve 的参数来传递
-      resolve({ label, value })
     })
-  })
+  } else {
+    return Promise.resolve(myCity)
+  }
+
 }
 
-export { getCurrentCity }
+export { getCurrentCity, BASE_URL, API }

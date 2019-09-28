@@ -1,0 +1,46 @@
+// 顶部搜索导航栏
+.searchNav {
+  position: absolute;
+  top: 25px;
+  z-index: 1;
+  width: 100%;
+  padding: 0 10px;
+
+  :global {
+    .icon-map {
+      font-size: 25px;
+      color: #fff;
+    }
+
+    .icon-arrow {
+      margin-left: 2px;
+      font-size: 12px;
+      color: #7f7f80;
+    }
+    .icon-seach {
+      padding: 0 2px 0 12px;
+      font-size: 15px;
+    }
+
+    span {
+      padding-left: 4px;
+      font-size: 13px;
+    }
+  }
+}
+
+.searchLeft {
+  flex: 1;
+  height: 34px;
+  margin: 0 10px;
+  padding: 5px 5px 5px 8px;
+  border-radius: 3px;
+  background-color: #fff;
+}
+
+.form {
+  border-left: 1px solid #e5e5e5;
+  margin-left: 12px;
+  line-height: 16px;
+  color: #9c9fa1;
+}
