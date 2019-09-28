@@ -1,6 +1,11 @@
 .root {
-  height: 300px;
-  background-color: #abc;
+  height: 100%;
+
+  :global {
+    .ReactVirtualized__List {
+      padding-left: 15px;
+    }
+  }
 }
 
 .houseNav {
@@ -30,4 +35,10 @@
       color: #00ae66;
     }
   }
+}
+
+.loading {
+  height: 110px;
+  margin-right: 15px;
+  background-color: #f6f5f6;
 }

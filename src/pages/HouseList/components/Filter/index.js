@@ -107,34 +107,79 @@ export default class Filter extends Component {
     })
   }
 
+  // 获得标题的选中状态
+  // 作用： 调用这个方法，只能得到（一个）传入菜单的选中状态
+  // 传入一个菜单，返回，这个菜单是否选中的状态（布尔值）
+  // type 表示： 标题类型
+  // selectedValue 表示： 该标题的选中值
+  // 获取标题的选中状态
+  getTitleSelectedStatus(type, selectedValue) {
+    let isSelected = false
+
+    if (type === 'area' && (selectedValue.length === 3 || selectedValue[0] !== 'area')) {
+      // 区域
+      isSelected = true
+    } else if (type === 'mode' && selectedValue[0] !== 'null') {
+      // 方式
+      isSelected = true
+    } else if (type === 'price' && selectedValue[0] !== 'null') {
+      // 租金
+      isSelected = true
+    } else if (type === 'more' && selectedValue[0] > 0) {
+      // 更多筛选条件，等到该组件功能完成后，再补充
+      isSelected = true
+    } else {
+      isSelected = false
+    }
+
+    return isSelected
+  }
+
   // 点击确定按钮，隐藏对话框以及遮罩层
   // 参数 value： 表示当前的选中值
   onOk = value => {
     // console.log('当前选中值为：', value, this.state.openType)
     // openType 表示当前打开对话框的类型
     const { openType, titleSelectedStatus } = this.state
-    const newTitleSelectedStatus = { ...titleSelectedStatus }
 
-    if (openType === 'area' && (value.length === 3 || value[0] !== 'area')) {
-      // 区域
-      newTitleSelectedStatus.area = true
-    } else if (openType === 'mode' && value[0] !== 'null') {
-      // 方式
-      newTitleSelectedStatus.mode = true
-    } else if (openType === 'price' && value[0] !== 'null') {
-      // 租金
-      newTitleSelectedStatus.price = true
-    } else if (openType === 'more') {
-      // 更多筛选条件，等到该组件功能完成后，再补充
-    } else {
-      newTitleSelectedStatus[openType] = false
+    const isSelected = this.getTitleSelectedStatus(openType, value)
+
+    // 组装所有的筛选条件数据, 然后, 传递给父组件
+    const newSelectedValues = {
+      ...this.state.selectedValues,
+      [openType]: value
     }
+    console.log(newSelectedValues)
+
+    const filters = {}
+
+    // 区域
+    const key = newSelectedValues.area[0]
+    let areaValue
+    if (newSelectedValues.area.length === 2) {
+      areaValue = newSelectedValues.area[1]
+    } else {
+      areaValue = newSelectedValues.area[2] === 'null'
+        ? newSelectedValues.area[1]
+        : newSelectedValues.area[2]
+    }
+    filters[key] = areaValue
+
+    // 租赁方式
+    filters.rentType = newSelectedValues.mode[0]
+    // 租金
+    filters.price = newSelectedValues.price[0]
+    // 更多筛选
+    filters.more = newSelectedValues.more.join(',')
+
+    // console.log(filters)
+    this.props.onFilter(filters)
+
 
     this.setState({
       openType: '',
 
-      titleSelectedStatus: newTitleSelectedStatus,
-
+      titleSelectedStatus: { ...titleSelectedStatus, [openType]: isSelected },
       selectedValues: {
         ...this.state.selectedValues,
         [openType]: value
@@ -145,30 +190,14 @@ export default class Filter extends Component {
   // 点击取消按钮或遮罩层，隐藏对话框以及遮罩层
   onCancel = () => {
     const { openType, selectedValues, titleSelectedStatus } = this.state
-    const newTitleSelectedStatus = { ...titleSelectedStatus }
+
     // 选中值
     const selected = selectedValues[openType]
 
-    if (
-      openType === 'area' &&
-      (selected.length === 3 || selected[0] !== 'area')
-    ) {
-      // 区域
-      newTitleSelectedStatus.area = true
-    } else if (openType === 'mode' && selected[0] !== 'null') {
-      // 方式
-      newTitleSelectedStatus.mode = true
-    } else if (openType === 'price' && selected[0] !== 'null') {
-      // 租金
-      newTitleSelectedStatus.price = true
-    } else if (openType === 'more') {
-      // 更多筛选条件，等到该组件功能完成后，再补充
-    } else {
-      newTitleSelectedStatus[openType] = false
-    }
+    const isSelected = this.getTitleSelectedStatus(openType, selected)
 
     this.setState({
-      titleSelectedStatus: newTitleSelectedStatus,
+      titleSelectedStatus: { ...titleSelectedStatus, [openType]: isSelected },
       openType: ''
     })
   }
@@ -227,6 +256,28 @@ export default class Filter extends Component {
     // ) : null
   }
 
+  // 渲染更多组件
+  renderFilterMore() {
+    const {
+      openType,
+      filtersData: { roomType, oriented, floor, characteristic },
+      selectedValues
+    } = this.state
+
+    if (openType !== 'more') return null
+    const data = { roomType, oriented, floor, characteristic }
+    const defaultValue = selectedValues.more
+
+    return (
+      <FilterMore
+        data={data}
+        defaultValue={defaultValue}
+        onCancel={this.onCancel}
+        onOk={this.onOk}
+      />
+    )
+  }
+
   render() {
     const { titleSelectedStatus, openType } = this.state
 
@@ -248,7 +299,7 @@ export default class Filter extends Component {
           {this.renderFilterPicker()}
 
           {/* 最后一个菜单对应的内容： */}
-          {/* <FilterMore /> */}
+          {this.renderFilterMore()}
         </div>
       </div>
     )

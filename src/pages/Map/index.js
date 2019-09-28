@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import { getCurrentCity, API } from '../../utils'
 
 import NavHeader from '../../components/NavHeader'
-
+import HouseItem from '../../components/HouseItem'
 import { Toast } from 'antd-mobile'
 
 import styles from './index.module.scss'
@@ -238,37 +238,11 @@ export default class Map extends Component {
     const { list } = this.state
     // console.log(list)
     return list.map(v => (
-      <div className={styles.houseItems} key={v.houseCode}>
-        <div className={styles.house}>
-          <div className={styles.imgWrap}>
-            <img
-              className={styles.img}
-              src={`http://localhost:8080${v.houseImg}`}
-              alt=""
-            />
-          </div>
-          <div className={styles.content}>
-            <h3 className={styles.title}>
-              {v.title}
-            </h3>
-            <div className={styles.desc}>{v.desc}</div>
-            <div>
-              {v.tags.map((tag, index) => {
-                const tagClass = index > 2 ? 'tag3' : `tag${index + 1}`
-
-                return (
-                  <span key={index} className={classnames(styles.tag, styles[tagClass])}>
-                    {tag}
-                  </span>
-                )
-              })}
-            </div>
-            <div className={styles.price}>
-              <span className={styles.priceNum}>{v.price}</span> 元/月
-                </div>
-          </div>
-        </div>
-      </div>
+      <HouseItem 
+        {...v}
+        key={v.houseCode}
+        onClick={() => this.props.history.push(`/details/${v.houseCode}`)}
+      />
     ))
   }
 
@@ -291,7 +265,7 @@ export default class Map extends Component {
             </a>
           </div>
           <>
-            {this.renderHouseList()}
+            <div className={styles.houseItems}>{this.renderHouseList()}</div>
           </>
         </div>
       </div>
